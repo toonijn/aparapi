@@ -683,7 +683,12 @@ public abstract class BlockWriter{
 
             final LocalVariableInfo localVariableInfo = alv.getLocalVariableInfo();
             if (alv.isDeclaration()) {
-               write(convertType(localVariableInfo.getVariableDescriptor(), true, false));
+                // This happens when the first time a variable is seen is within a multi_assign
+                // int a; // Is not converted to bytecode
+                // int b = a = 0;
+                // write(convertType(localVariableInfo.getVariableDescriptor(), true, false));
+                throw new CodeGenException("/* we can't declare this " + convertType(localVariableInfo.getVariableDescriptor(), true, false)
+                    + " here */");
             }
             if (localVariableInfo == null) {
                throw new CodeGenException("outOfScope" + _instruction.getThisPC() + " = ");
